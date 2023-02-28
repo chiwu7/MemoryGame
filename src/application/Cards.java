@@ -17,7 +17,7 @@ public class Cards {
 	 */
 	public Cards(Image img, int id) {
 		this.img = img;
-		this.backImg = Constants.imgCanard;
+		this.backImg = new Image("file:resources/canard.png", 240,240, false, false);;
 		this.id = id;
 		turn = false;
 	}
