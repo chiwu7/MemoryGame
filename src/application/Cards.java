@@ -2,9 +2,11 @@ package application;
 
 import javafx.scene.image.Image;
 
+
 public class Cards {
 
-	private String img;
+	private Image img ;
+	private Image backImg;
 	private int id;
 	private boolean turn;
 	
@@ -13,18 +15,27 @@ public class Cards {
 	 * @parem path : le chemin de l'image associée à la carte
 	 * @parem id : l'identifiant de la carte
 	 */
-	public Cards(String path, int id) {
-		this.img = path;
+	public Cards(Image img, int id) {
+		this.img = img;
+		this.backImg = Constants.imgCanard;
 		this.id = id;
 		turn = false;
 	}
 	
 	/*
-	 * Retourne le chemin de l'image associée à la carte
-	 * @return le chemin de l'image associée à la carte
+	 * Retourne l'image associée à la carte
+	 * @return l'image associée à la carte
 	 */
-	public String getImg() {
+	public Image getImg() {
 		return img;
+	}
+	
+	/*
+	 * Retourne l'image associé au dos de la carte
+	 * @return l'image associée au dos de la carte
+	 */
+	public Image getbackImg() {
+		return backImg;
 	}
 	
 	/*
