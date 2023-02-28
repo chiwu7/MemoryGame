@@ -1,5 +1,7 @@
 package application;
 
+import javafx.scene.image.Image;
+
 public class Cards {
 
 	private String img;
