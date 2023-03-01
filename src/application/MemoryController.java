@@ -15,11 +15,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 public class MemoryController {
 	
 	@FXML
-	private Canvas board;
+	private GridPane board;
 	
 	@FXML
 	private ComboBox<String> level;
@@ -33,16 +37,11 @@ public class MemoryController {
 	
 	private List<Cards> selectedCards;
 	
-	private ObservableList<Cards> observableCards;
-
-	private FilteredList<Cards> filteredCards;
-	
 	private Image [] tabImg = {Constants.img1, Constants.img2, Constants.img3, Constants.img4, Constants.img5, Constants.img6};
 	
 	@FXML 
 	public void initialize() {
-		//intialisation du contexte graphique
-		gc = board.getGraphicsContext2D();
+
 		//level.setItems(FXCollections.observableArrayList("Dur", "Facile"));
 		cards = new ArrayList<>();
 		selectedCards = new ArrayList<>();
@@ -57,18 +56,29 @@ public class MemoryController {
 		
 		Collections.shuffle(cards);
 		
-		//Création de la liste observable de cartes
-		observableCards = FXCollections.observableArrayList(cards);
-		
-		//Création de la liste filtrée de cartes non sélectionnées
-	    filteredCards = new FilteredList<>(observableCards, card -> !card.isTurn());
+		setupBoard();
+	    drawBoard();
 
-		//Ajout d'un écouteur sur la liste filtrée pour mettre à jour l'interface
-	    filteredCards.addListener((Change<? extends Cards> change) -> {
-	        // Mettre à jour l'interface ici
-	    });
-	    
-	    double availableWidth = board.getWidth() - Constants.SPACING * 4;
+	}
+
+	private void setupBoard() {
+		board.getColumnConstraints().clear();
+		board.getRowConstraints().clear();
+		
+		for (int i = 0; i <= 2; i++) {
+	        ColumnConstraints column = new ColumnConstraints();
+	        column.setPercentWidth(100.0 / 2);
+	        board.getColumnConstraints().add(column);
+	    }
+	    for (int i = 0; i <= 3; i++) {
+	        RowConstraints row = new RowConstraints();
+	        row.setPercentHeight(100.0 / 3);
+	        board.getRowConstraints().add(row);
+	    }
+	}
+
+	private void drawBoard() {
+		double availableWidth = board.getWidth() - Constants.SPACING * 4;
 	    double availableHeight = board.getHeight() - Constants.SPACING * 4;
 	    double aspectRatio = 3.0 / 4.0; // ratio largeur / hauteur des cartes
 
@@ -81,20 +91,24 @@ public class MemoryController {
 	    double cardHeight = cardWidth * aspectRatio;
 
 	    // Affiche les cartes avec leur taille optimale
-	    double padding = Constants.SPACING;
-	    double x = padding;
-	    double y = padding;
+	    double spacing = Constants.SPACING;
+	    double x = spacing;
+	    double y = spacing;
 	    for (Cards card : observableCards) {
 	        gc.drawImage(card.getbackImg(), x, y, cardWidth, cardHeight);
-	        x += cardWidth + padding;
+	        x += cardWidth +spacing;
 	        if (x + cardWidth > board.getWidth()) {
-	            x = padding;
-	            y += cardHeight + padding;
+	            x = spacing;
+	            y += cardHeight + spacing;
 	        }
+	        board.setOnMouseClicked(e -> handleClick(e, card));
 	    }
-
 	}
 	
+	private void handleClick(MouseEvent e, Cards card) {
+		System.out.println("test");
+	}
+
 	@FXML 
 	public void init() {
 		
