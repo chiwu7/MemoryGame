@@ -1,9 +1,13 @@
 package application;
 
+import java.lang.Thread;
 import java.lang.reflect.Array;
+import java.util.TimerTask;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.logging.Handler;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -40,12 +44,15 @@ public class MemoryController {
 	
 	private Image [] tabImg = {Constants.img1, Constants.img2, Constants.img3, Constants.img4, Constants.img5, Constants.img6};
 	
+	private Thread pauseThread;
+	
 	@FXML 
 	public void initialize() {
-
+		pauseThread = new Thread();
 		//level.setItems(FXCollections.observableArrayList("Dur", "Facile"));
 		cards = new ArrayList<>();
 		selectedCards = new ArrayList<>();
+    	selectedCards.clear();
 		
 		for(int i = 0; i<6; i++) {
 			Image img = tabImg[i];
@@ -91,8 +98,13 @@ public class MemoryController {
 		            imageView.setImage(card.getbackImg());
 		            imageView.setFitWidth(100);
 		            imageView.setFitHeight(100);
-		        } else {
+		            imageView.setOnMouseClicked(event -> handleClick(card));
+		        } else if (card.isTurn() && !card.isMatch()){
 		            // Sinon, utilise l'image de la carte elle-même
+		            imageView.setImage(card.getImg());
+		            imageView.setFitWidth(100);
+		            imageView.setFitHeight(100);
+		        } else if (card.isMatch()){
 		            imageView.setImage(card.getImg());
 		            imageView.setFitWidth(100);
 		            imageView.setFitHeight(100);
@@ -109,21 +121,48 @@ public class MemoryController {
 		            rowIndex++;
 		        }
 		        
-		        imageView.setOnMouseClicked(event -> handleClick(card));
+		        
 		    }
 	}
 	
 	private void handleClick(Cards card) {
 		if (!card.isTurn()) {
 	        card.turn(); // retourne la carte
-
+	        System.out.println("test");
 	        // Modifie la carte dans la liste
 	        int index = cards.indexOf(card);
 	        cards.set(index, card);
-
-	        // Redessine le plateau de jeu
 	        drawBoard();
+	        
+	        
+	        selectedCards.add(card);
+	        
+
+	        if (selectedCards.size() == 2) {
+	        	Cards firstCard = selectedCards.get(0);
+	            Cards secondCard = selectedCards.get(1);
+	        	if (firstCard.getImg().equals(secondCard.getImg())) {
+	        		System.out.println("match");
+	        		firstCard.match();
+	        		secondCard.match();
+	        		int indexFirstCard = cards.indexOf(firstCard);
+	        		int indexSecondCard = cards.indexOf(secondCard);
+	        		cards.set(indexFirstCard, firstCard);
+	        		cards.set(indexSecondCard, secondCard);
+	        	} else {
+	                 firstCard.hide();
+	                 secondCard.hide();
+	                 int indexFirstCard = cards.indexOf(firstCard);
+	                 int indexSecondCard = cards.indexOf(secondCard);
+	                 cards.set(indexFirstCard, firstCard);
+	                 cards.set(indexSecondCard, secondCard);
+	        	}
+	        		selectedCards.clear();
+	        } 
+	        // Redessine le plateau de jeu
 	    }
+		
+		
 	}
 
 	@FXML 

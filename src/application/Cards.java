@@ -74,7 +74,7 @@ public class Cards {
 		match = true;
 	}
 	
-	public boolean getMatch() {
+	public boolean isMatch() {
 		return match;
 	}
 		
