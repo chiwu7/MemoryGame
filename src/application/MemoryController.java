@@ -56,10 +56,8 @@ public class MemoryController {
 		}
 		
 		Collections.shuffle(cards);
-		
 		setupBoard();
 	    drawBoard();
-
 	}
 
 	private void setupBoard() {
@@ -130,7 +128,7 @@ public class MemoryController {
 
 	@FXML 
 	public void init() {
-		
+
 	}
 	
 	@FXML

@@ -9,6 +9,7 @@ public class Cards {
 	private Image backImg;
 	private int id;
 	private boolean turn;
+	private boolean match;
 	
 	/*
 	 * Crée un nouveau objet de la classe "Cards"
@@ -20,6 +21,7 @@ public class Cards {
 		this.backImg = new Image("file:resources/canard.png", 240,240, false, false);;
 		this.id = id;
 		turn = false;
+		match = false;
 	}
 	
 	/*
@@ -66,6 +68,14 @@ public class Cards {
 	 */
 	public int getId() {
 		return id;
+	}
+	
+	public void match() {
+		match = true;
+	}
+	
+	public boolean getMatch() {
+		return match;
 	}
 		
 }
