@@ -116,7 +116,16 @@ public class MemoryController {
 	}
 	
 	private void handleClick(Cards card) {
-		System.out.println("test");
+		if (!card.isTurn()) {
+	        card.turn(); // retourne la carte
+
+	        // Modifie la carte dans la liste
+	        int index = cards.indexOf(card);
+	        cards.set(index, card);
+
+	        // Redessine le plateau de jeu
+	        drawBoard();
+	    }
 	}
 
 	@FXML 
