@@ -15,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -78,34 +79,43 @@ public class MemoryController {
 	}
 
 	private void drawBoard() {
-		double availableWidth = board.getWidth() - Constants.SPACING * 4;
-	    double availableHeight = board.getHeight() - Constants.SPACING * 4;
-	    double aspectRatio = 3.0 / 4.0; // ratio largeur / hauteur des cartes
+		 board.getChildren().clear(); // Vide le GridPane avant de redessiner
 
-	    // Calcule la taille maximale possible des cartes
-	    double maxWidth = availableWidth / 3.0;
-	    double maxHeight = availableHeight / 4.0;
+		    int rowIndex = 0;
+		    int colIndex = 0;
 
-	    // Calcule la taille optimale des cartes en conservant leur ratio
-	    double cardWidth = Math.min(maxWidth, maxHeight / aspectRatio);
-	    double cardHeight = cardWidth * aspectRatio;
+		    // Parcourt la liste de cartes et crée une ImageView pour chacune
+		    for (Cards card : cards) {
+		        ImageView imageView = new ImageView();
 
-	    // Affiche les cartes avec leur taille optimale
-	    double spacing = Constants.SPACING;
-	    double x = spacing;
-	    double y = spacing;
-	    for (Cards card : observableCards) {
-	        gc.drawImage(card.getbackImg(), x, y, cardWidth, cardHeight);
-	        x += cardWidth +spacing;
-	        if (x + cardWidth > board.getWidth()) {
-	            x = spacing;
-	            y += cardHeight + spacing;
-	        }
-	        board.setOnMouseClicked(e -> handleClick(e, card));
-	    }
+		        // Si la carte est face cachée, utilise l'image du dos de la carte
+		        if (!card.isTurn()) {
+		            imageView.setImage(card.getbackImg());
+		            imageView.setFitWidth(100);
+		            imageView.setFitHeight(100);
+		        } else {
+		            // Sinon, utilise l'image de la carte elle-même
+		            imageView.setImage(card.getImg());
+		            imageView.setFitWidth(100);
+		            imageView.setFitHeight(100);
+		        }
+
+		        // Ajoute l'ImageView au GridPane
+		        board.setGridLinesVisible(true);
+		        board.add(imageView, colIndex, rowIndex);
+
+		        // Incrémente les indices de colonne et de ligne
+		        colIndex++;
+		        if (colIndex >= 3) {
+		            colIndex = 0;
+		            rowIndex++;
+		        }
+		        
+		        imageView.setOnMouseClicked(event -> handleClick(card));
+		    }
 	}
 	
-	private void handleClick(MouseEvent e, Cards card) {
+	private void handleClick(Cards card) {
 		System.out.println("test");
 	}
 
