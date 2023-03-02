@@ -44,16 +44,20 @@ public class MemoryController {
 	
 	private Image [] tabImg = {Constants.img1, Constants.img2, Constants.img3, Constants.img4, Constants.img5, Constants.img6};
 	
-	private Thread pauseThread;
+	private int pairFound; 
+	
+	private int numberPair;
+	
+	private int updateScore;
 	
 	@FXML 
 	public void initialize() {
-		pauseThread = new Thread();
+
 		//level.setItems(FXCollections.observableArrayList("Dur", "Facile"));
 		cards = new ArrayList<>();
 		selectedCards = new ArrayList<>();
     	selectedCards.clear();
-		
+		updateScore = 0;
 		for(int i = 0; i<6; i++) {
 			Image img = tabImg[i];
 			Cards card1 = new Cards(img, i);
@@ -61,10 +65,11 @@ public class MemoryController {
 			cards.add(card1);
 			cards.add(card2);
 		}
-		
+		numberPair = cards.size() / 2;
 		Collections.shuffle(cards);
 		setupBoard();
 	    drawBoard();
+	    
 	}
 
 	private void setupBoard() {
@@ -88,7 +93,7 @@ public class MemoryController {
 
 		    int rowIndex = 0;
 		    int colIndex = 0;
-
+		    setLabelScore();
 		    // Parcourt la liste de cartes et crée une ImageView pour chacune
 		    for (Cards card : cards) {
 		        ImageView imageView = new ImageView();
@@ -108,10 +113,10 @@ public class MemoryController {
 		            imageView.setImage(card.getImg());
 		            imageView.setFitWidth(100);
 		            imageView.setFitHeight(100);
+		            imageView.setOpacity(0.5);
 		        }
 
 		        // Ajoute l'ImageView au GridPane
-		        board.setGridLinesVisible(true);
 		        board.add(imageView, colIndex, rowIndex);
 
 		        // Incrémente les indices de colonne et de ligne
@@ -149,6 +154,10 @@ public class MemoryController {
 	        		int indexSecondCard = cards.indexOf(secondCard);
 	        		cards.set(indexFirstCard, firstCard);
 	        		cards.set(indexSecondCard, secondCard);
+	        		updateScore += 10;
+	        		pairFound++;
+	        		if (pairFound == numberPair)
+	        			drawBoard();
 	        	} else {
 	                 firstCard.hide();
 	                 secondCard.hide();
@@ -156,6 +165,7 @@ public class MemoryController {
 	                 int indexSecondCard = cards.indexOf(secondCard);
 	                 cards.set(indexFirstCard, firstCard);
 	                 cards.set(indexSecondCard, secondCard);
+	                 updateScore -= 1;
 	        	}
 	        		selectedCards.clear();
 	        } 
@@ -177,7 +187,11 @@ public class MemoryController {
 	
 	@FXML
 	public void reset() {
-		
+		initialize();
+	}
+	
+	public void setLabelScore() {
+		score.setText("score : " + updateScore);
 	}
 	
 }
