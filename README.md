@@ -19,3 +19,6 @@ Soucis rencontrés :
   - Trouvé la bonne solution pour pouvoir retourner les cartes 
   - Gérer le clic de la souris
 
+@Helpers
+
+PALAYRET Romain : mise en place des sons
