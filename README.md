@@ -18,6 +18,8 @@ Elements non implémentées :
 Soucis rencontrés : 
   - Trouvé la bonne solution pour pouvoir retourner les cartes 
   - Gérer le clic de la souris
+  - Comprendre javaFX
+  - Comprendre la programmation évènementielle
 
 @Helpers
 
