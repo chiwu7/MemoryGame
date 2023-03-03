@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.logging.Handler;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -16,6 +20,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -24,9 +30,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.Duration;
 
 public class MemoryController {
-	
+
 	@FXML
 	private GridPane board;
 	
@@ -49,11 +56,12 @@ public class MemoryController {
 	private int numberPair;
 	
 	private int updateScore;
+	private Timeline tm = null;
+	private int tempsRestants;
 	
 	@FXML 
 	public void initialize() {
-
-		//level.setItems(FXCollections.observableArrayList("Dur", "Facile"));
+		tempsRestants = 3;
 		cards = new ArrayList<>();
 		selectedCards = new ArrayList<>();
     	selectedCards.clear();
@@ -71,7 +79,9 @@ public class MemoryController {
 	    drawBoard();
 	    
 	}
-
+	/*
+	 * Met au bon formatage le gridPane
+	 */
 	private void setupBoard() {
 		board.getColumnConstraints().clear();
 		board.getRowConstraints().clear();
@@ -88,6 +98,9 @@ public class MemoryController {
 	    }
 	}
 
+	/*
+	 * Affiche les images sur le plateau
+	 */
 	private void drawBoard() {
 		 board.getChildren().clear(); // Vide le GridPane avant de redessiner
 
@@ -97,22 +110,18 @@ public class MemoryController {
 		    // Parcourt la liste de cartes et crée une ImageView pour chacune
 		    for (Cards card : cards) {
 		        ImageView imageView = new ImageView();
-
-		        // Si la carte est face cachée, utilise l'image du dos de la carte
+	            imageView.setFitWidth(150);
+	            imageView.setFitHeight(150);
+		        // Si la carte est face cachée, utilise l'image du dos de la carte et on l'a rend cliquable
 		        if (!card.isTurn()) {
 		            imageView.setImage(card.getbackImg());
-		            imageView.setFitWidth(100);
-		            imageView.setFitHeight(100);
 		            imageView.setOnMouseClicked(event -> handleClick(card));
-		        } else if (card.isTurn() && !card.isMatch()){
-		            // Sinon, utilise l'image de la carte elle-même
+		        // Si la carte est tournée et n'a pas trouvé sa paire, on utilise l'image de face
+		        } else if (card.isTurn() && !card.isMatch()){   
 		            imageView.setImage(card.getImg());
-		            imageView.setFitWidth(100);
-		            imageView.setFitHeight(100);
+		        // Si la carte a trouvé sa paire, on utilise l'image de face et on grise l'image
 		        } else if (card.isMatch()){
 		            imageView.setImage(card.getImg());
-		            imageView.setFitWidth(100);
-		            imageView.setFitHeight(100);
 		            imageView.setOpacity(0.5);
 		        }
 
@@ -130,30 +139,35 @@ public class MemoryController {
 		    }
 	}
 	
+	/*
+	 * Gestion des clics sur les cartes
+	 */
 	private void handleClick(Cards card) {
 		if (!card.isTurn()) {
-	        card.turn(); // retourne la carte
+			// retourne la carte
+	        card.turn(); 
 	        System.out.println("test");
 	        // Modifie la carte dans la liste
 	        int index = cards.indexOf(card);
 	        cards.set(index, card);
+	        //On redessinne le plateau
 	        drawBoard();
-	        
-	        
+	        //On ajoute la carte dans la liste des cartes sélectionnées
 	        selectedCards.add(card);
 	        
-
+	        //Si la liste des cartes sélectionné est égale à deux on effectue le traitement
+	        //Pour savoir si les deux cartes sélectionnés sont paires ou non
 	        if (selectedCards.size() == 2) {
 	        	Cards firstCard = selectedCards.get(0);
 	            Cards secondCard = selectedCards.get(1);
 	        	if (firstCard.getImg().equals(secondCard.getImg())) {
-	        		System.out.println("match");
 	        		firstCard.match();
 	        		secondCard.match();
 	        		int indexFirstCard = cards.indexOf(firstCard);
 	        		int indexSecondCard = cards.indexOf(secondCard);
 	        		cards.set(indexFirstCard, firstCard);
 	        		cards.set(indexSecondCard, secondCard);
+	        		//On pense à mettre à jour le score
 	        		updateScore += 10;
 	        		pairFound++;
 	        		if (pairFound == numberPair)
@@ -165,11 +179,11 @@ public class MemoryController {
 	                 int indexSecondCard = cards.indexOf(secondCard);
 	                 cards.set(indexFirstCard, firstCard);
 	                 cards.set(indexSecondCard, secondCard);
+	                 //On met à jour le score si une paire n'est pas trouvé
 	                 updateScore -= 1;
 	        	}
 	        		selectedCards.clear();
 	        } 
-	        // Redessine le plateau de jeu
 	    }
 		
 		
@@ -182,7 +196,7 @@ public class MemoryController {
 	
 	@FXML
 	public void run() {
-		
+		Timer();
 	}
 	
 	@FXML
@@ -190,8 +204,37 @@ public class MemoryController {
 		initialize();
 	}
 	
+	/*
+	 * Met à jour le label du score
+	 */
 	public void setLabelScore() {
 		score.setText("score : " + updateScore);
+	}
+	
+	public void Timer() {
+		tm = new Timeline(new KeyFrame(Duration.seconds(1), ae -> setTime()));
+		tm.setCycleCount(Animation.INDEFINITE);
+		tm.play();
+	}
+	
+	public void setTime() {
+		tempsRestants--;
+		timer.setText("Timer : " + tempsRestants +"s");
+		if (tempsRestants == 0) {
+			tm.stop();
+			//On attend la fin de l'animation d'affichage
+			Platform.runLater(() -> {
+	            Alert alert = new Alert(AlertType.INFORMATION);
+	            alert.setTitle("MemoryGame");
+	            alert.setHeaderText("Results :");
+	            alert.setContentText("Perdu");
+	            alert.setOnCloseRequest(event -> {
+	                initialize();
+	            });
+	            alert.showAndWait();
+	        });
+		}
+
 	}
 	
 }
