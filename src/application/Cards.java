@@ -70,10 +70,16 @@ public class Cards {
 		return id;
 	}
 	
+	/*
+	 * Retourne vrai quand une carte a trouvé sa père
+	 */
 	public void match() {
 		match = true;
 	}
 	
+	/*
+	 * Retourne vrai si l'état a trouvé sa paire, sinon faux
+	 */
 	public boolean isMatch() {
 		return match;
 	}

@@ -38,35 +38,43 @@ import javafx.util.Duration;
 public class MemoryController {
 
 	@FXML
-	private GridPane board;
+	private GridPane board; //le plateau qui va contenir les cartes
 	
 	@FXML
-	private ComboBox<String> level;
+	private ComboBox<String> level; //les différents niveau de difficultés
 	
 	@FXML
-	private Label score, timer;
+	private Label score, timer; //l'affichage du score et du temps
 	
 	
-	private List<Cards> cards;
+	private List<Cards> cards; //la liste qui va contenir les cartes
 	
-	private List<Cards> selectedCards;
+	private List<Cards> selectedCards; //Les cartes selectionnées avec un clic
 	
+	//Mon tableau qui contient mes images
 	private Image [] tabImg = {Constants.img1, Constants.img2, Constants.img3, Constants.img4, Constants.img5, Constants.img6};
 	
+	//Le nombre de paire trouvé
 	private int pairFound; 
 	
+	//Le nombre de paire a trouvé
 	private int numberPair;
 	
+	//Score du joueur
 	private int updateScore;
 	
 	private Timeline tm = null;
 	
+	//Temps du joueur
 	private int tempsRestants;
 	
+	//Ligne du plateau
 	private int ligne;
 	
+	//Colonne du plateau
 	private int colonne;
 	
+	//Son de victoire d'une partie
 	private MediaPlayer VictorySound;
 	
 	@FXML 
@@ -145,6 +153,7 @@ public class MemoryController {
 	
 	/*
 	 * Gestion des clics sur les cartes
+	 * @param card : la carte sur laquelle on a cliqué
 	 */
 	private void handleClick(Cards card) {
 		if (!card.isTurn()) {
@@ -174,6 +183,7 @@ public class MemoryController {
 	        		//On pense à mettre à jour le score
 	        		updateScore += 10;
 	        		pairFound++;
+	        		//Quand on trouve toutes les paires, le joueur gagne
 	        		if (pairFound == numberPair) {
 	        			drawBoard();
 	        			victory();
@@ -195,6 +205,10 @@ public class MemoryController {
 		
 	}
 	
+	/*
+	 * Fonction quand on clique sur le bouton Run 
+	 * Lance le jeu
+	 */
 	@FXML
 	public void run() {
 		String lvl = level.getValue();
@@ -238,12 +252,19 @@ public class MemoryController {
 		score.setText("score : " + updateScore);
 	}
 	
+	/*
+	 * Timer du temps
+	 */
 	public void Timer() {
 		tm = new Timeline(new KeyFrame(Duration.seconds(1), ae -> setTime()));
 		tm.setCycleCount(Animation.INDEFINITE);
 		tm.play();
 	}
 	
+	/*
+	 * Modifie l'affichage du temps restant
+	 * Affichage d'une alerte quand le temps est égal à zéro
+	 */
 	public void setTime() {
 		tempsRestants--;
 		timer.setText("Timer : " + tempsRestants +"s");
@@ -263,6 +284,9 @@ public class MemoryController {
 		}
 	}
 	
+	/*
+	 * Affichage d'une alerte quand le joueur gagne
+	 */
 	public void victory() {
 		tm.stop();
 		//On attend la fin de l'animation d'affichage
@@ -292,6 +316,7 @@ public class MemoryController {
 			cards.add(card2);
 		}
 		numberPair = nombre;
+		//on mélange les cartes
 		Collections.shuffle(cards);
 	}
 }
