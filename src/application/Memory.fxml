@@ -24,11 +24,6 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" onAction="#init" text="Initalisation" GridPane.halignment="CENTER" GridPane.rowIndex="3">
-               <font>
-                  <Font size="22.0" />
-               </font>
-            </Button>
             <Button mnemonicParsing="false" onAction="#reset" text="Reset" GridPane.halignment="CENTER" GridPane.rowIndex="5">
                <font>
                   <Font size="22.0" />

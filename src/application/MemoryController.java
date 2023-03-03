@@ -43,7 +43,6 @@ public class MemoryController {
 	@FXML
 	private Label score, timer;
 	
-	private GraphicsContext gc;
 	
 	private List<Cards> cards;
 	
@@ -56,44 +55,45 @@ public class MemoryController {
 	private int numberPair;
 	
 	private int updateScore;
+	
 	private Timeline tm = null;
+	
 	private int tempsRestants;
+	
+	private int ligne;
+	
+	private int colonne;
 	
 	@FXML 
 	public void initialize() {
-		tempsRestants = 3;
+		pairFound = 0;
+		level.getItems().addAll("Easy", "Medium", "Hard");
+		level.setValue("Easy");
+		timer.setText("Timer : " + 0 +"s");
 		cards = new ArrayList<>();
 		selectedCards = new ArrayList<>();
     	selectedCards.clear();
 		updateScore = 0;
-		for(int i = 0; i<6; i++) {
-			Image img = tabImg[i];
-			Cards card1 = new Cards(img, i);
-			Cards card2 = new Cards(img, i);
-			cards.add(card1);
-			cards.add(card2);
-		}
-		numberPair = cards.size() / 2;
-		Collections.shuffle(cards);
-		setupBoard();
-	    drawBoard();
+
 	    
 	}
+
 	/*
 	 * Met au bon formatage le gridPane
 	 */
-	private void setupBoard() {
+	private void setupBoard(int ligne, int colonne) {
 		board.getColumnConstraints().clear();
 		board.getRowConstraints().clear();
-		
-		for (int i = 0; i <= 2; i++) {
+		//2
+		for (int i = 0; i <= colonne; i++) {
 	        ColumnConstraints column = new ColumnConstraints();
-	        column.setPercentWidth(100.0 / 2);
+	        column.setPercentWidth(100.0 / colonne);
 	        board.getColumnConstraints().add(column);
 	    }
-	    for (int i = 0; i <= 3; i++) {
+		//3
+	    for (int i = 0; i <= ligne; i++) {
 	        RowConstraints row = new RowConstraints();
-	        row.setPercentHeight(100.0 / 3);
+	        row.setPercentHeight(100.0 / ligne);
 	        board.getRowConstraints().add(row);
 	    }
 	}
@@ -146,7 +146,6 @@ public class MemoryController {
 		if (!card.isTurn()) {
 			// retourne la carte
 	        card.turn(); 
-	        System.out.println("test");
 	        // Modifie la carte dans la liste
 	        int index = cards.indexOf(card);
 	        cards.set(index, card);
@@ -163,6 +162,7 @@ public class MemoryController {
 	        	if (firstCard.getImg().equals(secondCard.getImg())) {
 	        		firstCard.match();
 	        		secondCard.match();
+	        		System.out.println("Fin");
 	        		int indexFirstCard = cards.indexOf(firstCard);
 	        		int indexSecondCard = cards.indexOf(secondCard);
 	        		cards.set(indexFirstCard, firstCard);
@@ -170,8 +170,10 @@ public class MemoryController {
 	        		//On pense à mettre à jour le score
 	        		updateScore += 10;
 	        		pairFound++;
-	        		if (pairFound == numberPair)
+	        		if (pairFound == numberPair) {
 	        			drawBoard();
+	        			victory();
+	        		}
 	        	} else {
 	                 firstCard.hide();
 	                 secondCard.hide();
@@ -188,20 +190,41 @@ public class MemoryController {
 		
 		
 	}
-
-	@FXML 
-	public void init() {
-
-	}
 	
 	@FXML
 	public void run() {
-		Timer();
+		String lvl = level.getValue();
+		switch (lvl) {
+			case "Easy": 
+				tempsRestants = 30;
+				creationCardsList(3);
+				setupBoard(1,2);
+				drawBoard();
+				Timer();
+				break;
+			case "Medium":
+				tempsRestants = 40;
+				creationCardsList(4);
+				setupBoard(2,2);
+				drawBoard();
+				Timer();
+				break;
+			case "Hard":
+				tempsRestants = 60;
+				creationCardsList(6);
+				setupBoard(3,2);
+				drawBoard();
+				Timer();
+				break;
+		}
+		
 	}
 	
 	@FXML
 	public void reset() {
+		board.getChildren().clear();
 		initialize();
+		tm.stop();
 	}
 	
 	/*
@@ -227,14 +250,42 @@ public class MemoryController {
 	            Alert alert = new Alert(AlertType.INFORMATION);
 	            alert.setTitle("MemoryGame");
 	            alert.setHeaderText("Results :");
-	            alert.setContentText("Perdu");
+	            alert.setContentText("Loser");
 	            alert.setOnCloseRequest(event -> {
-	                initialize();
+	                reset();
 	            });
 	            alert.showAndWait();
 	        });
 		}
-
 	}
 	
+	public void victory() {
+		tm.stop();
+		//On attend la fin de l'animation d'affichage
+		Platform.runLater(() -> {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("MemoryGame");
+            alert.setHeaderText("Results :");
+            alert.setContentText("Victory");
+            alert.setOnCloseRequest(event -> {
+                reset();
+            });
+            alert.showAndWait();
+        });
+	}
+	/*
+	 * Création de la liste de cartes
+	 * @param nombre le nombre de paire
+	 */
+	private void creationCardsList(int nombre) {
+		for(int i = 0; i<nombre; i++) {
+			Image img = tabImg[i];
+			Cards card1 = new Cards(img, i);
+			Cards card2 = new Cards(img, i);
+			cards.add(card1);
+			cards.add(card2);
+		}
+		numberPair = nombre;
+		Collections.shuffle(cards);
+	}
 }
