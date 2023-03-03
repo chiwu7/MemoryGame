@@ -12,6 +12,9 @@ public class Constants {
 	static final Image img5 = new Image("file:resources/fraise.jpg", 240, 240, false, false);
 	static final Image img6 = new Image("file:resources/banane.jpg", 240, 240, false, false);
 
+	static final String easy = "Easy";
+	static final String medium = "Medium";
+	static final String hard = "Hard";
 	
 	public Constants() {}
 }

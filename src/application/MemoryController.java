@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.lang.Thread;
 import java.lang.reflect.Array;
 import java.util.TimerTask;
@@ -30,6 +31,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 public class MemoryController {
@@ -64,6 +67,8 @@ public class MemoryController {
 	
 	private int colonne;
 	
+	private MediaPlayer VictorySound;
+	
 	@FXML 
 	public void initialize() {
 		pairFound = 0;
@@ -74,8 +79,7 @@ public class MemoryController {
 		selectedCards = new ArrayList<>();
     	selectedCards.clear();
 		updateScore = 0;
-
-	    
+		VictorySound = new MediaPlayer(new Media(new File("resources/Victory.mp3").toURI().toString()));
 	}
 
 	/*
@@ -262,12 +266,14 @@ public class MemoryController {
 	public void victory() {
 		tm.stop();
 		//On attend la fin de l'animation d'affichage
+	    VictorySound.play();
 		Platform.runLater(() -> {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("MemoryGame");
             alert.setHeaderText("Results :");
             alert.setContentText("Victory");
             alert.setOnCloseRequest(event -> {
+            	VictorySound.stop();
                 reset();
             });
             alert.showAndWait();
