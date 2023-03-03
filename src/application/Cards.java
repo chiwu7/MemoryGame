@@ -5,10 +5,15 @@ import javafx.scene.image.Image;
 
 public class Cards {
 
+	//L'image de face de la carte
 	private Image img ;
+	//L'image de dos de la carte
 	private Image backImg;
+	//L'id de la carte
 	private int id;
+	//Savoir si une carte est tournée ou non
 	private boolean turn;
+	//Savoir si une carte a trouvé sa carte ou non
 	private boolean match;
 	
 	/*
